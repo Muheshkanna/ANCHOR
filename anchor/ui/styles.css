@@ -1,0 +1,548 @@
+/* =============================================================================
+   ANCHOR AI INTEGRITY ASSURANCE — STYLESHEET
+   Pure CSS Design System: Forensic / Security Instrument Aesthetic
+   Strict offline mode, WCAG AA contrast, 8px spacing grid, tabular numerals
+   ============================================================================= */
+
+/* ── 1. Design Tokens (:root) ──────────────────────────────────────────────── */
+:root {
+  /* Colors */
+  --bg-app: #F7F7F5;
+  --bg-surface: #FFFFFF;
+  --bg-surface-subtle: #F3F3F0;
+  --border-subtle: #E4E4DF;
+  --border-strong: #D1D1CB;
+
+  --text-primary: #14171A;
+  --text-secondary: #5B6470;
+  --text-muted: #88929E;
+
+  /* Accent */
+  --accent: #0F766E;
+  --accent-hover: #115E59;
+  --accent-focus: rgba(15, 118, 110, 0.25);
+  --accent-subtle: #F0FDFA;
+  --accent-border: #99F6E4;
+
+  /* Semantic Severity Colors */
+  --sev-high-text: #B42318;
+  --sev-high-bg: #FEF3F2;
+  --sev-high-border: #FECDCA;
+
+  --sev-medium-text: #B54708;
+  --sev-medium-bg: #FFFAEB;
+  --sev-medium-border: #FEDF89;
+
+  --sev-low-text: #027A48;
+  --sev-low-bg: #ECFDF3;
+  --sev-low-border: #A6F4C5;
+
+  /* Dispositions */
+  --disp-quarantine-text: #B42318;
+  --disp-quarantine-bg: #FEF3F2;
+  --disp-review-text: #B54708;
+  --disp-review-bg: #FFFAEB;
+  --disp-accept-text: #027A48;
+  --disp-accept-bg: #ECFDF3;
+
+  /* Typography */
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  /* Radii & Shadows */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --transition-fast: 130ms ease;
+}
+
+/* Optional dark mode support via prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-app: #121417;
+    --bg-surface: #1A1D21;
+    --bg-surface-subtle: #22262B;
+    --border-subtle: #2E333A;
+    --border-strong: #3F4650;
+
+    --text-primary: #ECEFF1;
+    --text-secondary: #9BA3AF;
+    --text-muted: #6B7280;
+
+    --accent: #14B8A6;
+    --accent-hover: #0D9488;
+    --accent-focus: rgba(20, 184, 166, 0.25);
+    --accent-subtle: #132E2B;
+    --accent-border: #115E59;
+
+    --sev-high-text: #FCA5A5;
+    --sev-high-bg: #450A0A;
+    --sev-high-border: #7F1D1D;
+
+    --sev-medium-text: #FCD34D;
+    --sev-medium-bg: #451A03;
+    --sev-medium-border: #78350F;
+
+    --sev-low-text: #6EE7B7;
+    --sev-low-bg: #064E3B;
+    --sev-low-border: #065F46;
+
+    --disp-quarantine-text: #FCA5A5;
+    --disp-quarantine-bg: #450A0A;
+    --disp-review-text: #FCD34D;
+    --disp-review-bg: #451A03;
+    --disp-accept-text: #6EE7B7;
+    --disp-accept-bg: #064E3B;
+  }
+}
+
+/* ── 2. Base & Typography ──────────────────────────────────────────────────── */
+html, body, [class*="css"], .stApp {
+  font-family: var(--font-sans) !important;
+  color: var(--text-primary) !important;
+  background-color: var(--bg-app) !important;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular numerals everywhere numbers appear */
+span, div, p, code, pre, button, input {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── 3. Chrome / Streamlit Cleanup ─────────────────────────────────────────── */
+#MainMenu, footer, header[data-testid="stHeader"] .stDeployButton, .viewerBadge_container__1QSob {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+header[data-testid="stHeader"] {
+  background: transparent !important;
+}
+
+/* Center and constrain main container */
+.main .block-container {
+  max-width: 1200px !important;
+  padding-top: 1.5rem !important;
+  padding-bottom: 3rem !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+}
+
+/* ── 4. Layout: Top Bar ────────────────────────────────────────────────────── */
+.anchor-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem 0 1rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.anchor-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.anchor-title {
+  font-family: var(--font-sans);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.anchor-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.anchor-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-subtle);
+}
+
+.anchor-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent);
+}
+
+/* ── 5. Sidebar & Input Controls ───────────────────────────────────────────── */
+section[data-testid="stSidebar"] {
+  background-color: var(--bg-surface) !important;
+  border-right: 1px solid var(--border-subtle) !important;
+}
+
+section[data-testid="stSidebar"] .block-container {
+  padding-top: 2rem !important;
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+}
+
+/* Sidebar panel container */
+.controls-panel {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+/* Inputs styling */
+.stTextInput input, .stSelectbox select, div[data-baseweb="select"] > div {
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 0.85rem !important;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast) !important;
+}
+
+.stTextInput input:focus, div[data-baseweb="select"] > div:focus-within {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px var(--accent-focus) !important;
+  outline: none !important;
+}
+
+.stTextInput label, .stSelectbox label, .stMultiSelect label {
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: var(--text-secondary) !important;
+  font-weight: 600 !important;
+}
+
+/* ── 6. Buttons ────────────────────────────────────────────────────────────── */
+button[kind="primary"], .stButton > button[kind="primary"] {
+  background-color: var(--accent) !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--accent) !important;
+  border-radius: var(--radius-md) !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  padding: 0.5rem 1rem !important;
+  box-shadow: var(--shadow-subtle) !important;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast) !important;
+}
+
+button[kind="primary"]:hover, .stButton > button[kind="primary"]:hover {
+  background-color: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+}
+
+button[kind="secondary"], .stButton > button[kind="secondary"], .stButton > button:not([kind="primary"]) {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast) !important;
+}
+
+button[kind="secondary"]:hover, .stButton > button:not([kind="primary"]):hover {
+  border-color: var(--border-strong) !important;
+  background-color: var(--bg-surface-subtle) !important;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px !important;
+}
+
+/* ── 7. Tabs (Underline Style) ─────────────────────────────────────────────── */
+div[data-testid="stTabs"] {
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 1.5rem;
+}
+
+button[data-testid="stTab"] {
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0.625rem 1rem !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  color: var(--text-secondary) !important;
+  transition: color var(--transition-fast), border-color var(--transition-fast) !important;
+}
+
+button[data-testid="stTab"]:hover {
+  color: var(--text-primary) !important;
+}
+
+button[data-testid="stTab"][aria-selected="true"] {
+  color: var(--accent) !important;
+  border-bottom: 2px solid var(--accent) !important;
+  font-weight: 600 !important;
+}
+
+/* ── 8. Summary Card & Verdict ─────────────────────────────────────────────── */
+.summary-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-subtle);
+  margin-bottom: 1.25rem;
+}
+
+.verdict-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-left-width: 4px;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.verdict-banner.rec-accept {
+  border-left-color: var(--disp-accept-text);
+}
+.verdict-banner.rec-review {
+  border-left-color: var(--disp-review-text);
+}
+.verdict-banner.rec-quarantine {
+  border-left-color: var(--disp-quarantine-text);
+}
+
+.verdict-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.verdict-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.verdict-badge.rec-accept {
+  background-color: var(--disp-accept-bg);
+  color: var(--disp-accept-text);
+  border: 1px solid var(--sev-low-border);
+}
+.verdict-badge.rec-review {
+  background-color: var(--disp-review-bg);
+  color: var(--disp-review-text);
+  border: 1px solid var(--sev-medium-border);
+}
+.verdict-badge.rec-quarantine {
+  background-color: var(--disp-quarantine-bg);
+  color: var(--disp-quarantine-text);
+  border: 1px solid var(--sev-high-border);
+}
+
+/* KPI Tiles Grid */
+.kpi-tile {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 1rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.kpi-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.kpi-value {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── 9. Expanders & Accordions ─────────────────────────────────────────────── */
+div[data-testid="stExpander"] {
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-subtle) !important;
+  margin-bottom: 0.75rem !important;
+  overflow: hidden !important;
+}
+
+div[data-testid="stExpander"] summary {
+  padding: 0.75rem 1rem !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  color: var(--text-primary) !important;
+}
+
+div[data-testid="stExpander"] summary:hover {
+  background-color: var(--bg-surface-subtle) !important;
+}
+
+/* ── 10. Flag Cards & Badges ───────────────────────────────────────────────── */
+.flag-row {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 1.125rem;
+  margin-bottom: 0.5rem;
+  transition: border-color var(--transition-fast);
+}
+
+.flag-row:hover {
+  border-color: var(--border-strong);
+}
+
+.sev-pill {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.sev-high {
+  background-color: var(--sev-high-bg);
+  color: var(--sev-high-text);
+  border: 1px solid var(--sev-high-border);
+}
+
+.sev-medium {
+  background-color: var(--sev-medium-bg);
+  color: var(--sev-medium-text);
+  border: 1px solid var(--sev-medium-border);
+}
+
+.sev-low {
+  background-color: var(--sev-low-bg);
+  color: var(--sev-low-text);
+  border: 1px solid var(--sev-low-border);
+}
+
+/* ── 11. Audit Log & Status Banners ────────────────────────────────────────── */
+.chain-ok {
+  background-color: var(--sev-low-bg);
+  border: 1px solid var(--sev-low-border);
+  border-left-width: 4px;
+  border-left-color: var(--sev-low-text);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 1.25rem;
+  color: var(--sev-low-text);
+  font-size: 0.9rem;
+}
+
+.chain-err {
+  background-color: var(--sev-high-bg);
+  border: 1px solid var(--sev-high-border);
+  border-left-width: 4px;
+  border-left-color: var(--sev-high-text);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 1.25rem;
+  color: var(--sev-high-text);
+  font-size: 0.9rem;
+}
+
+/* Truncated hash with hover title */
+.mono-hash {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  background: var(--bg-surface-subtle);
+  padding: 0.15rem 0.35rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  cursor: help;
+}
+
+/* Section divider */
+.section-divider {
+  border-top: 1px solid var(--border-subtle);
+  margin: 1.25rem 0;
+}
+
+/* Dataframe styling */
+div[data-testid="stDataFrame"] {
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden !important;
+}
+
+/* Code blocks & JSON */
+pre, code {
+  font-family: var(--font-mono) !important;
+  font-size: 0.85rem !important;
+}
+
+div[data-testid="stCodeBlock"] {
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  background-color: var(--bg-surface-subtle) !important;
+}
+
+/* Status / Progress widget */
+div[data-testid="stStatusWidget"] {
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  background-color: var(--bg-surface) !important;
+  box-shadow: var(--shadow-subtle) !important;
+}
+
+/* Alert notices (st.info, st.success, st.error, st.warning) */
+div[data-testid="stAlert"] {
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-left-width: 4px !important;
+  box-shadow: var(--shadow-subtle) !important;
+}

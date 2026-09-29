@@ -1,0 +1,140 @@
+# Anchor AI Integrity Assurance — Docker Compose
+#
+# Two services share one image:
+#
+#   anchor-eval  ─ Network-isolated evaluation runner.
+#                  network_mode: none → no external reachability.
+#                  Runs scripts/run_eval.py directly via CLI so the isolation
+#                  can be measured externally by scripts/prove_isolation.sh.
+#                  This is the "isolation proof" service.
+#
+#   anchor-ui    ─ Streamlit demo dashboard.
+#                  Normal bridge networking so a browser can reach port 8501.
+#                  Shares the same image; just a different command + network.
+#
+# Usage
+# ─────
+#   # Build both services once:
+#   docker compose build
+#
+#   # Run the isolated evaluation (exits when pipeline completes):
+#   docker compose run --rm anchor-eval
+#
+#   # Start the Streamlit dashboard (runs until Ctrl-C):
+#   docker compose up anchor-ui
+#
+#   # Run both (eval exits; UI stays up):
+#   docker compose up
+#
+# Volumes
+# ───────
+#   reference_data/  is mounted read-write so both services can write reports
+#   into reference_data/outputs/ and share the provenance.db chain-log.
+
+
+
+# ── Named network used only by anchor-ui ─────────────────────────────────────
+networks:
+  anchor-bridge:
+    driver: bridge
+
+# ── Shared volume for evaluation artefacts ───────────────────────────────────
+volumes:
+  anchor-outputs:   # named volume; also available via bind-mount below
+
+# =============================================================================
+services:
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # anchor-eval — Air-gapped pipeline runner
+  # ──────────────────────────────────────────────────────────────────────────
+  anchor-eval:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: anchor:latest           # shared tag so anchor-ui reuses the build
+
+    # Hard network isolation: no eth0, no bridge, no NAT, no DNS.
+    # Only a loopback interface exists inside the container.
+    network_mode: "none"
+
+    # Mount reference data read-write so the pipeline can write its report.
+    # The :z suffix sets the correct SELinux label on systems that need it.
+    volumes:
+      - ./reference_data:/app/reference_data:z
+
+    working_dir: /app
+
+    environment:
+      PYTHONPATH: /app
+      # Disable HuggingFace symlink warnings (safe on most filesystems)
+      HF_HUB_DISABLE_SYMLINKS_WARNING: "1"
+      # Force offline mode — belt-and-suspenders on top of network_mode: none
+      TRANSFORMERS_OFFLINE: "1"
+      HF_DATASETS_OFFLINE: "1"
+
+    # CLI entrypoint — all flags can be overridden with:
+    #   docker compose run anchor-eval --dataset /custom/path ...
+    command:
+      - python
+      - /app/scripts/run_eval.py
+      - --dataset
+      - /app/reference_data/poisoned_backdoor
+      - --model
+      - /app/reference_data/backdoored_model.pt
+      - --ref
+      - /app/reference_data/clean
+      - --db
+      - /app/reference_data/provenance_chain.db
+      - --out
+      - /app/reference_data/outputs
+      - --dataset-id
+      - poisoned_backdoor_eval
+      - --model-id
+      - backdoored_model_pt
+
+    # The pipeline is CPU-only; these limits prevent runaway resource usage.
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 8G
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # anchor-ui — Streamlit demo dashboard (normal networking)
+  # ──────────────────────────────────────────────────────────────────────────
+  anchor-ui:
+    image: anchor:latest           # reuse the image built by anchor-eval
+    depends_on:
+      - anchor-eval                # build ordering only; eval exits before UI
+
+    # Standard bridge network so the host browser can reach port 8501.
+    networks:
+      - anchor-bridge
+
+    ports:
+      - "8501:8501"
+
+    volumes:
+      - ./reference_data:/app/reference_data:z
+
+    working_dir: /app
+
+    environment:
+      PYTHONPATH: /app
+      HF_HUB_DISABLE_SYMLINKS_WARNING: "1"
+
+    command:
+      - streamlit
+      - run
+      - /app/anchor/ui/app.py
+      - --server.port=8501
+      - --server.address=0.0.0.0
+      - --server.headless=true
+      - --browser.gatherUsageStats=false
+
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 8G
